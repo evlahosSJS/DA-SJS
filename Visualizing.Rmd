@@ -1,0 +1,52 @@
+---
+title: "Visualizing"
+author: "Emile Vlahos"
+date: "09/09/2020"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+```{r}
+library(tidyverse)
+```
+
+```{r}
+fpl_players.3
+```
+#WHICH PREMIER LEAGUE TEAM HAS THE BEST FANTASY PLAYERS
+
+```{r}
+fpl <- read.csv(file = 'fpl_players 3.csv')
+```
+
+
+```{r}
+fpl[fpl == 0] <- NA
+```
+
+This data set contains many different variables regarding Premier League Soccer players and their fantasy scoring. The intended insight of the following graphs is to determine which teams had the most successful fantasy league players for the 2019/2020 season, so to gain insight into the 2020/2021 season. For this reason, three teams are without data, due to the fact that they did not play in the 2019/2020 season and were promoted to the league this year.  
+
+```{r}
+ggplot(data = fpl, mapping = aes(x = teamId, y = total_points, color = position), alpha = .8) + 
+  geom_point() + 
+  facet_wrap(. ~position) +
+  theme(axis.text.x = element_text(angle = 90)) +
+  stat_summary(fun.y=mean, aes(group=1), geom="line", colour="black", size = .1) +
+  stat_summary(fun.y=mean, aes(group=1), geom="point", colour="black", size = 2, shape = 4) +
+  labs(x = "Team Name", y = "Total Fantasy Points", title = "Premier League Player's Fantasy Points per position and team", subtitle = "Data points are player's fantasy points, with crosses representing team mean", caption = "Source: fpl_players.3.")
+```
+
+The above graph demonstrates the spread of players and their total points at the end of the season per position. The reasoning behind splitting the positions was that each position is held to a different standard for point acquisition (ie. a forward receives points for scoring, while a goalkeeper receives points for saves). Furthermore, players with a total points of zero were excluded, as this only occurred when a player did not play a minute in the season. Additionally added was the mean score for each team to provide insight into which team's players performed the best on average. From this information, we can determine that Liverpool had the most successful defense, Wolves had the most successful forwards, Burnley had the most successful Goalkeepers and Man City had the best Midfielders. However, as a result of how teams report their players at the start of the season, both Burnley and Wolves only have one player playing in that position. If we were to make a minimum requirement for number of players to equal 2, we would see Man City win the Forwards and Man Utd win Goalkeepers. 
+```{r}
+ggplot(data = fpl, mapping = aes(x = teamId, fill = position)) +
+  geom_bar() +
+  theme(axis.text.x = element_text(angle = 90)) +
+  labs(x = "Team Name", y = "Total Players on Roster", title = "Premier League Team's Roster and Position totals", subtitle = "A bar is the number of players on a roster, with each segment representing number of players per posi", caption = "Source: fpl_players.3.")
+```
+
+This bar chart was selected so that we may see the distributions of positions in each team. Paying particular attention to Liverpool, Man City and Man Utd (Established highest scoring per position). From this chart one can infer that Manchester City have a higher number of Forwards and Midfielders, than Liverpool has Defenders and Man U has goalkeepers. By the combination of information from the previous graph and this graph, it can be decided that despite having one of the smaller rosters for a team, Man City has the more successful players overall. Taking this into the context of the real world, last year Man City came second in the league, losing to Liverpool. Liverpool in the above graphs was second in fantasy, so it is not outlandish to see that they were successful (especially because of their closeness to Man City in the mean points).
+
+
+

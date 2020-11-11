@@ -1,0 +1,223 @@
+---
+title: "exploring"
+author: "NAME"
+date: "DATE"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Load the necessary libraries
+```{r}
+library(tidyverse)
+```
+
+Take a look inside your dataset
+```{r}
+listings
+```
+
+### Variation
+
+Perform an analysis of the variation in the "neighbourhood" column. 
+
+```{r}
+ggplot(data = listings) +
+  geom_bar(mapping = aes(x = neighbourhood)) + theme(axis.text = element_text(angle = 90))
+```
+
+* Which values are the most common? Why?
+
+> The most commmon values are Westminster, Tower Hamlets and Hackney. These neighborhoods have the highets number of listings because they are very afluent locations, that have prices that the large majority of people can not pay, therefore there are more available than the other, more affordable, locations. 
+
+* Which values are rare? Why? Does that match your expectations?
+
+> Some values that are rare are: Sutton, Bexley, Havering and City of London. These locations are either very affordable and therefore sell fast, or in the case of the City of London, are popular because they are very central and are in business districts where the large majority of London goes to work. 
+
+* Can you see any unusual patterns? What might explain them?
+
+> There are not any unusual patterns, the availablity of properties are quite easy to predict based on the location and afforabilty of the neighborhood.
+
+Perform an analysis of the variation in the "room_type" column. 
+
+```{r}
+ggplot(data = listings) +
+  geom_bar(mapping = aes(x = room_type)) + theme(axis.text = element_text(angle = 90))
+```
+```{r}
+listings %>% 
+  count(room_type)
+```
+
+* Which values are the most common? Why?
+
+> The most common room type is an entire home/ apt. This is very unsuprising seeing that London is an urban area with multiple suburbs. The people of London either live centrally and live in an apartment, and anyone that doesn't, lives outside of the center in a home.
+
+* Which values are rare? Why? Does that match your expectations?
+
+> The rarest value is a Hotel room, which obviously would be the rarest value because there are far fewer hotels than houses and apartments, and therefore there would be fewer availablilties than that of homes and apartments.
+
+* Can you see any unusual patterns? What might explain them?
+
+> There are not any unusual points here either, these values correspond with the layout of London. Hotels are always going to be less common than homes and apartments, especially in such an urban area.
+
+Perform an analysis of the variation in the "price" column. Make sure to explore different "binwidth" values in your analysis.
+
+```{r}
+ggplot(listings) + 
+  geom_histogram(mapping = aes(x = price), binwidth = 10) +
+  coord_cartesian(xlim = c(0, 1300))
+```
+
+* Which values are the most common? Why?
+
+> The cheaper properties are defineitlely more common, this is expected as there are far more affordable properties in the entirety of London than there are 
+
+* Which values are rare? Why? Does that match your expectations?
+
+> More expensive properties are rarer, this matches expectations because the houses in London are often small, and larger, more expensive, properties are harder to come by. Therefore, more expensive properties are harder to come by
+
+* Can you see any unusual patterns? What might explain them?
+
+> Although there are some spikes at expensive prices, there are no explainable fuctuations 
+
+Perform an analysis of the variation in the "minimum_nights" column. Make sure to explore different "binwidth" values in your analysis.
+
+```{r}
+ggplot(listings) + 
+  geom_histogram(mapping = aes(x = minimum_nights), binwidth = 1) +
+  coord_cartesian(xlim = c(0, 25))
+```
+
+* Which values are the most common? Why?
+
+> As long as the customer is paying, it is unlikely that the renter cares if someone is actually stayig in the property, therefore, 0 nights makes sense
+
+* Which values are rare? Why? Does that match your expectations?
+
+> The higher the minimum nights, the less there are. This makes sense as those properties would tend to recieve less attention.
+
+* Can you see any unusual patterns? What might explain them?
+
+> Some listings have higher minumum nights around the 10, 14 and 21 day mark because those are the typical vacation lengths. There are also some values not shown that are year long, this is because some owners go away for extended periods of time and wish to rent out their property.
+
+Perform an analysis of the variation in the "number_of_reviews" column. Make sure to explore different "binwidth" values in your analysis.
+
+```{r}
+ggplot(listings) + 
+  geom_histogram(mapping = aes(x = number_of_reviews), binwidth = 5) +
+  coord_cartesian(xlim = c(0, 100))
+```
+
+* Which values are the most common? Why?
+
+> Lower number of reviews are the most common, typically less than 10 are most common
+
+* Which values are rare? Why? Does that match your expectations?
+
+> The higher number of reviews, the less likelihood that there are. There is a negative correlation between number of reviews and their occurences on different properties
+
+* Can you see any unusual patterns? What might explain them?
+
+> No unsusual patterns, it seems very common that fewer reviews would be seen as that requires more effort on the customer's side, which is less likely to occur
+
+Perform an analysis of the variation in the "availability_365" column. Make sure to explore different "binwidth" values in your analysis.
+
+```{r}
+ggplot(listings) + 
+  geom_histogram(mapping = aes(x = availability_365), binwidth = 1) +
+  coord_cartesian(xlim = c(0, 370))
+?listings
+```
+
+* Which values are the most common? Why?
+
+> Properties with zero vailable days are the most common, that is because this dataset is a snapshot of mid renting period and therefore there would be more properties that have been completely booked out.
+
+* Which values are rare? Why? Does that match your expectations?
+
+> Properties in the mid range of the data set are less common because it is unlikely for properties to be available for that long 
+
+* Can you see any unusual patterns? What might explain them?
+
+> 365 available days are quite common, which is quite unusual. However, this could be because they are rooms or apartments that are available for extended amounts of time, and therefore there are completely empty properties that are being lived in by the owner, while waiting to rent out to a renter.
+
+###PART 2
+
+* What seems to be the most common name (of a person) in the city you selected
+
+```{r}
+listings %>% 
+  count(host_name) %>%
+  arrange(desc(n))
+smaller <- listings
+```
+> The most common host name is 'Veeve', by a almost double to second most common. Veeve is a home sharing company based in London so this makes sense.
+
+* Do the number of reviews affect the price of the Airbnb? How? Why do you think this happens?
+
+```{r}
+ggplot(data = listings) +
+  geom_point(mapping = aes(x = number_of_reviews, y = price))
+```
+> The more reviews that a property has, the more expensive it is. This is because more people would rent cheaper properties, and therfore there will be more people to leave a review (positive or negative). There is also a spike towards the more expensice end, this is because the large price of the property might prompt its renters to leave more reviews.
+
+* What type of room tends to have the highest Airbnb price?
+
+```{r}
+ggplot(data = listings) +
+  geom_boxplot(mapping = aes(x = reorder(room_type, price, FUN = median), y = price))
+```
+> This information shows that based on the median of the prices per room type, entire homes/apartments tend to be more expensive, while shared rooms are the cheapest. This makes sense based even on a price per square foot basis
+
+* What neighborhood(s) tend to have the highest Airbnb price?
+
+```{r}
+ggplot(data = listings) +
+  geom_boxplot(mapping = aes(x = reorder(neighbourhood, price, FUN = median), y = price)) + theme(axis.text = element_text(angle = 90))
+  
+```
+> Kengsington and Chelsea has the highest median price, while Brexley has the lowest. There are areas like Islington, City of London and Westminster that have the highest individual properties, which makes sense seeing as they are the most exclusive areas in London.
+
+* Suppose you could purchase a property in the city you selected, and that you could rent it to others as an Airbnb. In what neighborhood would you want to purchase your property? Why? 
+
+
+> Kengsington and Chelsea. Specifically because rich people that come and visit always stay in Chelsea, there are very few other areas they stay in. Therefore, I would own a property there and rent it out. I would increase prices during holidays because thats when Americans visit, and every person I have talked to in America has said they stayed in Chelsea. 
+
+### Part III
+
+Visit a real estate website (such as realtor.com) and find a property that is for sale in the neighborhood you selected. Take note of the price and address of the property. 
+
+Savills, Kensington
+145 Kensington Church Street London W8 4BN
+
+£32,000,000.00 or $42,094,240.00
+
+* Use your dataset to find what the average Airbnb price/night is in the neighborhood you selected.
+
+```{r}
+meanN <- listings %>%
+  group_by(neighbourhood) %>%
+  summarize(price = mean(price))
+
+meanN
+```
+> The average price of a night in Kensington and Chelsea is £192.90, which is 253.71$
+
+* Use your dataset to find what the average number of available nights per year is for an Airbnb in the neighborhood you selected.
+
+```{r}
+meanNights <- listings %>%
+  group_by(neighbourhood) %>%
+  summarize(availability_365 = mean(availability_365))
+
+meanNights
+```
+
+> The average number of available nights in Kensington and Chelsea is 142.44
+
+* Suppose you bought the property you selected above. If you were to rent it as an Airbnb at the average neighborhood price, for the average number of days, how long will it take you to break even?
+
+> To break even it would be $36,138.4524 for 1,164 years. Not a great deal for the renter.
