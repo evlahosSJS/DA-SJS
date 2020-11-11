@@ -1,0 +1,237 @@
+---
+title: "Data Transformation"
+author: "Emile Vlahos"
+date: "18/09/2020"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# 5.1 Introduction 
+
+### 5.1.1 Prerequisites
+
+```{r}
+library(tidyverse)
+library(nycflights13)
+```
+
+# 5.1.2 nycFlights13
+
+```{r}
+flights
+```
+
+### 5.1.3 dplyr
+
+verbs
+
+filter 
+arrange
+select
+mutate
+summarize
+
+verb(database, whatToDo?)
+
+# 5.2 Filter rows with filter()
+
+Flights that occurred on Jan 1st
+
+```{r}
+filter(flights, month == 1, day == 1)
+```
+
+```{r}
+(jan1 <- filter(flights, month == 1, day == 1))
+```
+
+```{r}
+(dec25 <- filter(flights, month == 12, day == 25))
+```
+
+### 5.2.1 Comparisons
+
+==, >, >=, <, <=, !
+
+```{r}
+filter(flights, month == 1)
+```
+
+```{r}
+cos(pi/2) == 0
+```
+
+```{r}
+near(cos(pi/2), 0)
+```
+
+### 5.2.2 Logical operators
+
+or ------> |
+and ------> &
+not ------> !
+
+Flights that departed in November **or** December  
+
+```{r}
+filter(flights, month == 11 | month == 12)
+```
+
+may, jun, july, aug
+
+```{r}
+filter(flights, month == 5 | month == 6 | month == 7 | month == 8)
+```
+
+```{r}
+filter(flights, month %in% c(5,6,7,8) )
+```
+
+Flights that departed in November **and** arrived in December
+
+```{r}
+# tbd
+```
+
+Flights that weren't delayed (on departure or arrival) by more than two hours
+
+```{r}
+filter(flights, dep_delay <= 120 & arr_delay <= 120)
+```
+
+##### 5.2.3 Missing Values
+
+One important feature of R that make comparisons tricky are missing values, or NAs. NA represents an unkown value so missing values are contagious: almost any operation invloving an unkown value will also be unkown
+
+```{r}
+100 == NA
+2 > NA
+x <- NA
+is.na(x)
+```
+
+How do I get rid of NA's on my dataset?
+
+```{r}
+filter(flights, is.na(dep_time))
+filter(flights, !is.na(dep_time))
+withoutNA <- filter(flights, !is.na(dep_time))
+withoutNA
+
+```
+
+##### 5.2.4 Exercises
+
+> 1. Find all flights that
+
+Had an arrival delay of two or more hours
+
+```{r}
+filter(flights, arr_delay >= 120)
+```
+
+Flew to Houston (IAH or HOU)
+
+```{r}
+```
+
+Departed in summer (July, August, and September)
+
+```{r}
+
+```
+
+Arrived more than two hours late, but didn't leave late
+ 
+```{r}
+filter(flights, arr_delay > 120 & dep_delay <= 0)
+```
+
+Were delayed by at least an hour, but made up over 30 minutes in flight
+
+
+```{r}
+select(flights, year, month, day)
+select(flights, year:day)
+
+select(flights, -(year:day))
+select(flights, dep_time:time_hour)
+```
+
+
+### 5.6 Grouped Summaries with su,marise()
+
+The last key verb is sumarize(). It collapses a data frame to a single row:
+
+```{r}
+summarize(flights, delay = mean(dep_delay, na.rm = TRUE))
+```
+
+```{r}
+by_dest <- group_by(flights, dest)
+```
+
+```{r}
+delays <- summarize(by_dest,
+  count = n(),
+  dist = mean(distance, na.rm = TRUE),
+  delay = mean(arr_delay, na.rm = TRUE)
+  )
+
+delays
+```
+
+```{r}
+ggplot(data = delays) + 
+  geom_point(mapping = aes(x = dist, y = delay, size = count))
+```
+
+```{r}
+delays <- filter(delays, count > 20, dest != 'HNL')
+```
+
+
+```{r}
+ggplot(data = delays) + 
+  geom_point(mapping = aes(x = dist, y = delay, size = count))
+```
+
+```{r}
+ggplot(data = delays, mapping = aes(x = dist, y = delay)) + 
+  geom_point(aes(size = count), alpha = 1/3) +
+  geom_smooth(se = FALSE)
+```
+
+```{r}
+delays <- flights %>% 
+  group_by(dest) %>%
+  summarize(
+    count = n(),
+    dist = mean(distance, na.rm = TRUE),
+    delay = mean(arr_delay, na.rm = TRUE)
+  ) %>%
+  filter(count > 20, dest != 'HNL')
+
+ggplot(data = delays, mapping = aes(x = dist, y = delay)) + 
+  geom_point(aes(size = count), alpha = 1/3) +
+  geom_smooth(se = FALSE)
+  
+```
+
+
+##### 5.6.2 Missing values
+
+```{r}
+flights %>%
+  group_by(year, month, day) %>%
+  summarize(dep_delay = mean(dep_delay))
+
+```
+
+
+
+
+
